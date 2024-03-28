@@ -15,16 +15,22 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import java.io.IOException;
+import java.util.ArrayList;
 
-class SnakeGame extends SurfaceView implements Runnable{
+class SnakeGame extends SurfaceView implements Runnable,SnakeGameBroadcaster{
 
     // Objects for the game loop/thread
     private Thread mThread = null;
+
+    private ArrayList<InputObserver>
+            inputObservers = new ArrayList<>();
+    UIController mUIController;
     // Control pausing between updates
     private long mNextFrameTime;
     // Is the game currently playing and or paused?
     private volatile boolean mPlaying = false;
     private volatile boolean mPaused = true;
+    private volatile boolean gameOver = true;
 
     // for playing sound effects
     private SoundPool mSP;
@@ -47,7 +53,7 @@ class SnakeGame extends SurfaceView implements Runnable{
     private Snake mSnake;
     // And an apple
     private Apple mApple;
-
+    private HUD hud;
 
     // This is the constructor method that gets called
     // from SnakeActivity
@@ -102,7 +108,12 @@ class SnakeGame extends SurfaceView implements Runnable{
                 new Point(NUM_BLOCKS_WIDE,
                         mNumBlocksHigh),
                 blockSize);
+        hud = new HUD(size);
+        mUIController = new UIController(this);
 
+    }
+    public void addObserver(InputObserver o) {
+        inputObservers.add(o);
     }
 
 
@@ -127,7 +138,7 @@ class SnakeGame extends SurfaceView implements Runnable{
     @Override
     public void run() {
         while (mPlaying) {
-            if(!mPaused) {
+            if(!mPaused && !gameOver) {
                 // Update 10 times a second
                 if (updateRequired()) {
                     update();
@@ -189,6 +200,7 @@ class SnakeGame extends SurfaceView implements Runnable{
             mSP.play(mCrashID, 1, 1, 0, 0, 1);
 
             mPaused =true;
+            gameOver=true;
         }
 
     }
@@ -213,9 +225,10 @@ class SnakeGame extends SurfaceView implements Runnable{
             // Draw the apple and the snake
             mApple.draw(mCanvas, mPaint);
             mSnake.draw(mCanvas, mPaint);
+            hud.draw(mCanvas,mPaint,this);
 
             // Draw some text while paused
-            if(mPaused){
+            if(mPaused && gameOver){
 
                 // Set the size and color of the mPaint for the text
                 mPaint.setColor(Color.argb(255, 255, 255, 255));
@@ -239,8 +252,9 @@ class SnakeGame extends SurfaceView implements Runnable{
     public boolean onTouchEvent(MotionEvent motionEvent) {
         switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_UP:
-                if (mPaused) {
+                if (mPaused && gameOver) {
                     mPaused = false;
+                    gameOver = false;
                     newGame();
 
                     // Don't want to process snake direction for this tap
@@ -254,6 +268,10 @@ class SnakeGame extends SurfaceView implements Runnable{
             default:
                 break;
 
+        }
+        for (InputObserver o : inputObservers) {
+            o.handleInput(motionEvent, this,
+                    hud.getControls());
         }
         return true;
     }
@@ -276,4 +294,18 @@ class SnakeGame extends SurfaceView implements Runnable{
         mThread = new Thread(this);
         mThread.start();
     }
+    public Boolean getPaused(){
+        return mPaused;
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
+    }
+    public void newPause(){
+        mPaused = true;
+    }
+    public void newResume() {
+        mPaused = false;
+    }
 }
+
