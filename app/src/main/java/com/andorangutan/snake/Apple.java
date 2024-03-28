@@ -58,7 +58,6 @@ class Apple implements GameObject{
     public void draw(Canvas canvas, Paint paint){
         canvas.drawBitmap(mBitmapApple,
                 location.x * mSize, location.y * mSize, paint);
-
     }
-
 }
+

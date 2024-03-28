@@ -15,15 +15,10 @@ public class Main extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Get the pixel dimensions of the screen
-        Display display = getWindowManager().getDefaultDisplay();
-
-        // Initialize the result into a Point object
-        Point size = new Point();
-        display.getSize(size);
+        Graphics graphics = new Graphics(this);
 
         // Create a new instance of the SnakeEngine class
-        mSnakeGame = new SnakeGame(this, size);
+        mSnakeGame = new SnakeGame(this, graphics);
 
         // Make snakeEngine the view of the Activity
         setContentView(mSnakeGame);
