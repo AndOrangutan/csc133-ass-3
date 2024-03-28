@@ -37,5 +37,4 @@ public class Main extends Activity {
         super.onPause();
         mSnakeGame.pause();
     }
-    
 }
