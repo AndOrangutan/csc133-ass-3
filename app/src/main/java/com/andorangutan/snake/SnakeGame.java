@@ -16,7 +16,7 @@ import android.view.SurfaceView;
 import java.io.IOException;
 import java.util.ArrayList;
 
-class SnakeGame extends SurfaceView implements Runnable,SnakeGameBroadcaster{
+class SnakeGame extends SurfaceView implements Runnable_SnakeGameBroadcaster{
 
     // Objects for the game loop/thread
     private Thread mThread = null;
@@ -64,39 +64,6 @@ class SnakeGame extends SurfaceView implements Runnable,SnakeGameBroadcaster{
         super(context);
 
         this.graphics = graphics;
-        // // Work out how many pixels each block is
-        // int blockSize = size.x / NUM_BLOCKS_WIDE;
-        // // How many blocks of the same size will fit into the height
-        // mNumBlocksHigh = size.y / blockSize;
-
-        // // Initialize the SoundPool
-        // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        //     AudioAttributes audioAttributes = new AudioAttributes.Builder()
-        //             .setUsage(AudioAttributes.USAGE_MEDIA)
-        //             .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-        //             .build();
-        //
-        //     mSP = new SoundPool.Builder()
-        //             .setMaxStreams(5)
-        //             .setAudioAttributes(audioAttributes)
-        //             .build();
-        // } else {
-        //     mSP = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
-        // }
-        // try {
-        //     AssetManager assetManager = context.getAssets();
-        //     AssetFileDescriptor descriptor;
-        //
-        //     // Prepare the sounds in memory
-        //     descriptor = assetManager.openFd("get_apple.ogg");
-        //     mEat_ID = mSP.load(descriptor, 0);
-        //
-        //     descriptor = assetManager.openFd("snake_death.ogg");
-        //     mCrashID = mSP.load(descriptor, 0);
-        //
-        // } catch (IOException e) {
-        //     // Error
-        // }
 
         this.audio = new Audio();
 
@@ -104,9 +71,6 @@ class SnakeGame extends SurfaceView implements Runnable,SnakeGameBroadcaster{
         this.eatID = this.audio.load(context, "get_apple.ogg");
         this.crashID = this.audio.load(context ,"snake_death.ogg");
 
-        // // Initialize the drawing objects
-        // mSurfaceHolder = getHolder();
-        // mPaint = new Paint();
 
         graphics.setSurfaceHolder(getHolder());
 
@@ -130,21 +94,21 @@ class SnakeGame extends SurfaceView implements Runnable,SnakeGameBroadcaster{
     }
 
 
-    // Called to start a new game
-    public void newGame() {
-
-        // reset the snake
-        mSnake.reset(graphics.board.blocksWide, graphics.board.blocksHigh);
-
-        // Get the apple ready for dinner
-        mApple.spawn();
-
-        // Reset the mScore
-        mScore = 0;
-
-        // Setup mNextFrameTime so an update can triggered
-        mNextFrameTime = System.currentTimeMillis();
-    }
+    // // Called to start a new game
+    // public void newGame() {
+    //
+    //     // reset the snake
+    //     mSnake.reset(graphics.board.blocksWide, graphics.board.blocksHigh);
+    //
+    //     // Get the apple ready for dinner
+    //     mApple.spawn();
+    //
+    //     // Reset the mScore
+    //     mScore = 0;
+    //
+    //     // Setup mNextFrameTime so an update can triggered
+    //     mNextFrameTime = System.currentTimeMillis();
+    // }
 
 
     // Handles the game loop
@@ -163,61 +127,61 @@ class SnakeGame extends SurfaceView implements Runnable,SnakeGameBroadcaster{
     }
 
 
-    // Check to see if it is time for an update
-    public boolean updateRequired() {
+    // // Check to see if it is time for an update
+    // public boolean updateRequired() {
+    //
+    //     // Run at 10 frames per second
+    //     final long TARGET_FPS = 10;
+    //     // There are 1000 milliseconds in a second
+    //     final long MILLIS_PER_SECOND = 1000;
+    //
+    //     // Are we due to update the frame
+    //     if(mNextFrameTime <= System.currentTimeMillis()){
+    //         // Tenth of a second has passed
+    //
+    //         // Setup when the next update will be triggered
+    //         mNextFrameTime =System.currentTimeMillis()
+    //                 + MILLIS_PER_SECOND / TARGET_FPS;
+    //
+    //         // Return true so that the update and draw
+    //         // methods are executed
+    //         return true;
+    //     }
+    //
+    //     return false;
+    // }
 
-        // Run at 10 frames per second
-        final long TARGET_FPS = 10;
-        // There are 1000 milliseconds in a second
-        final long MILLIS_PER_SECOND = 1000;
 
-        // Are we due to update the frame
-        if(mNextFrameTime <= System.currentTimeMillis()){
-            // Tenth of a second has passed
-
-            // Setup when the next update will be triggered
-            mNextFrameTime =System.currentTimeMillis()
-                    + MILLIS_PER_SECOND / TARGET_FPS;
-
-            // Return true so that the update and draw
-            // methods are executed
-            return true;
-        }
-
-        return false;
-    }
-
-
-    // Update all the game objects
-    public void update() {
-
-        // Move the snake
-        mSnake.move();
-
-        // Did the head of the snake eat the apple?
-        if(mSnake.checkDinner(mApple.getLocation())){
-            // This reminds me of Edge of Tomorrow.
-            // One day the apple will be ready!
-            mApple.spawn();
-
-            // Add to  mScore
-            mScore = mScore + 1;
-
-            // Play a sound
-            audio.play(this.eatID);
-        }
-
-        // Did the snake die?
-        if (mSnake.detectDeath()) {
-            // Pause the game ready to start again
-            audio.play(crashID);
-
-            mPaused = true;
-            gameOver=true;
-        }
-
-    }
-
+    // // Update all the game objects
+    // public void update() {
+    //
+    //     // Move the snake
+    //     mSnake.move();
+    //
+    //     // Did the head of the snake eat the apple?
+    //     if(mSnake.checkDinner(mApple.getLocation())){
+    //         // This reminds me of Edge of Tomorrow.
+    //         // One day the apple will be ready!
+    //         mApple.spawn();
+    //
+    //         // Add to  mScore
+    //         mScore = mScore + 1;
+    //
+    //         // Play a sound
+    //         audio.play(this.eatID);
+    //     }
+    //
+    //     // Did the snake die?
+    //     if (mSnake.detectDeath()) {
+    //         // Pause the game ready to start again
+    //         audio.play(crashID);
+    //
+    //         mPaused = true;
+    //         gameOver=true;
+    //     }
+    //
+    // }
+    //
 
     // Do all the drawing
     public void draw() {
@@ -297,6 +261,7 @@ class SnakeGame extends SurfaceView implements Runnable,SnakeGameBroadcaster{
             mThread.join();
         } catch (InterruptedException e) {
             // Error
+            Log.e("Thread", "InterruptedException occurred while waiting in join()", e);
         }
     }
 

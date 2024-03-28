@@ -6,6 +6,6 @@ import java.util.ArrayList;
 
 public interface InputObserver {
     void handleInput(MotionEvent event,
-                     SnakeGame sg,
+                     GameState gs,
                      ArrayList<Rect> controls);
 }
