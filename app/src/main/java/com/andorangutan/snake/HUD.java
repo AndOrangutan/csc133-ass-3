@@ -34,11 +34,11 @@ public class HUD {
         controls = new ArrayList<>();
         controls.add(PAUSE,pause);
     }
-    void draw(Canvas c, Paint p, SnakeGame sg) {
+    void draw(Canvas c, Paint p, GameState gs) {
         // Draw the HUD
         p.setColor(Color.argb(255,255,255,255));
         p.setTextSize(mTextFormatting);
-        if(sg.getPaused() && !sg.isGameOver()){
+        if(gs.isPaused() && !gs.isGameOver()){
             p.setTextSize(mTextFormatting * 5);
             c.drawText("PAUSED",
                     mScreenWidth /3, mScreenHeight /2

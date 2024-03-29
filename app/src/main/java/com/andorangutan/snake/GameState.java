@@ -7,7 +7,9 @@ import android.util.Log;
 import android.graphics.Color;
 import android.graphics.Canvas;
 
-public class GameState {
+import java.util.ArrayList;
+
+public class GameState implements SnakeGameBroadcaster {
 
     private Snake snake;
     private Apple apple;
@@ -19,6 +21,11 @@ public class GameState {
     private int crashID = -1;
     private Audio audio;
 
+
+    private HUD hud;
+    private ArrayList<InputObserver>
+            inputObservers = new ArrayList<>();
+    private UIController uiController;
 
     private Thread thread = null;
 
@@ -52,8 +59,13 @@ public class GameState {
                         board.blocksHigh),
                 board.blockSize);
 
+        this.hud = new HUD(new Point(graphics.getHorizontalPixels(),graphics.getVerticalPixels()));
+        uiController = new UIController(this);
     }
 
+    public void addObserver(InputObserver o) {
+        inputObservers.add(o);
+    }
     public void newGame() {
 
         this.snake.reset(graphics.board.blocksWide, graphics.board.blocksHigh);
@@ -131,14 +143,14 @@ public class GameState {
         }
     }
 
-    public void reusme(Runnable target) {
+    public void resusme(Runnable target) {
         this.playing = true;
         this.thread = new Thread(target);
         this.thread.start();
     }
 
     // Do all the drawing
-    public void draw() {
+    public void draw(Context context) {
         // Get a lock on the mCanvas
         if (graphics.getSurfaceHolder().getSurface().isValid()) {
             graphics.canvas = graphics.getSurfaceHolder().lockCanvas();
@@ -168,7 +180,7 @@ public class GameState {
                 // Draw the message
                 // We will give this an international upgrade soon
                 //mCanvas.drawText("Tap To Play!", 200, 700, mPaint);
-                graphics.canvas.drawText(getResources().
+                graphics.canvas.drawText(context.getResources().
                                 getString(R.string.tap_to_play),
                         200, 700, graphics.paint);
             }
@@ -188,8 +200,32 @@ public class GameState {
         this.thread = thread;
     }
 
-    public void onTouchPassthrough(MotionEvent motionEvent) {
-        this.snake.switchHeading(motionEvent);
+    public boolean onTouchPassthrough(MotionEvent motionEvent) {
+
+        switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
+            case MotionEvent.ACTION_UP:
+                if (this.isPaused() && this.isGameOver()) {
+                    this.setPaused(false);
+                    this.setGameOver(false);
+                    this.newGame();
+
+                    // Don't want to process snake direction for this tap
+                    return true;
+                }
+
+                // Let the Snake class handle the input
+                this.snake.switchHeading(motionEvent);
+                break;
+
+            default:
+                break;
+
+        }
+        for (InputObserver o : inputObservers) {
+            o.handleInput(motionEvent, this,
+                    hud.getControls());
+        }
+        return true;
     }
     public boolean isGameOver() {
         return this.gameOver;
