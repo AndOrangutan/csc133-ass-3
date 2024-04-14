@@ -1,6 +1,10 @@
 package com.andorangutan.snake;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.view.MotionEvent;
 import android.graphics.Point;
 import android.util.Log;
@@ -113,7 +117,8 @@ public class GameState implements SnakeGameBroadcaster {
     private boolean updateRequired() {
 
         // Run at 10 frames per second
-        final long TARGET_FPS = 10;
+        long TARGET_FPS = 10;
+        TARGET_FPS = TARGET_FPS + (this.score / 3);
         // There are 1000 milliseconds in a second
         final long MILLIS_PER_SECOND = 1000;
 
@@ -155,8 +160,14 @@ public class GameState implements SnakeGameBroadcaster {
         if (graphics.getSurfaceHolder().getSurface().isValid()) {
             graphics.canvas = graphics.getSurfaceHolder().lockCanvas();
 
+            Bitmap bitmapBackground = BitmapFactory.decodeResource(context.getResources(), R.drawable.background);
+            graphics.canvas.drawBitmap(bitmapBackground, 0, 0, null);
+
+            Typeface comicFont = context.getResources().getFont(R.font.comicsansms);
+            graphics.paint.setTypeface(comicFont);
+
             // Fill the screen with a color
-           graphics.canvas.drawColor(Color.argb(255, 26, 128, 182));
+           //graphics.canvas.drawColor(Color.argb(255, 26, 128, 182));
 
             // Set the size and color of the mPaint for the text
             graphics.paint.setColor(Color.argb(255, 255, 255, 255));
@@ -171,8 +182,8 @@ public class GameState implements SnakeGameBroadcaster {
             hud.draw(graphics.canvas, graphics.paint,this);
 
             // Draw some text while paused
-            if(this.paused && this.gameOver){
-
+            //if(this.paused && this.gameOver){
+            if (this.paused && (apple.getLocation().x == -10)) {
                 // Set the size and color of the mPaint for the text
                 graphics.paint.setColor(Color.argb(255, 255, 255, 255));
                 graphics.paint.setTextSize(250);
@@ -182,7 +193,19 @@ public class GameState implements SnakeGameBroadcaster {
                 //mCanvas.drawText("Tap To Play!", 200, 700, mPaint);
                 graphics.canvas.drawText(context.getResources().
                                 getString(R.string.tap_to_play),
-                        200, 700, graphics.paint);
+                        450, 700, graphics.paint);
+            }
+            else if (this.paused && this.gameOver)
+            {
+                graphics.paint.setColor(Color.argb(255, 255, 255, 255));
+                graphics.paint.setTextSize(250);
+
+                Typeface deathFont = context.getResources().getFont(R.font.optimusprincepssemibold);
+
+                graphics.paint.setTypeface(deathFont);
+                graphics.canvas.drawText(context.getResources().
+                                getString(R.string.you_died),
+                        500, 700, graphics.paint);
             }
 
 
