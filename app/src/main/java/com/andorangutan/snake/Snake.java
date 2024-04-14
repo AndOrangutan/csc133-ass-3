@@ -16,11 +16,8 @@ class Snake implements GameObject{
     // The location in the grid of all the segments
     private ArrayList<Point> segmentLocations;
 
-    // How big is each segment of the snake?
-    private int mSegmentSize;
 
-    // How big is the entire grid
-    private Point mMoveRange;
+    private Board board;
 
     // Where is the centre of the screen
     // horizontally in pixels?
@@ -44,15 +41,14 @@ class Snake implements GameObject{
     private Bitmap mBitmapBody;
 
 
-    Snake(Context context, Point mr, int ss) {
+    Snake(Context context, Board board) {
 
         // Initialize our ArrayList
         segmentLocations = new ArrayList<>();
 
         // Initialize the segment size and movement
         // range from the passed in parameters
-        mSegmentSize = ss;
-        mMoveRange = mr;
+        this.board = board;
 
         // Create and scale the bitmaps
         mBitmapHeadRight = BitmapFactory
@@ -76,7 +72,7 @@ class Snake implements GameObject{
         // in the correct direction
         mBitmapHeadRight = Bitmap
                 .createScaledBitmap(mBitmapHeadRight,
-                        ss, ss, false);
+                        board.blockSize, board.blockSize, false);
 
         // A matrix for scaling
         Matrix matrix = new Matrix();
@@ -84,20 +80,20 @@ class Snake implements GameObject{
 
         mBitmapHeadLeft = Bitmap
                 .createBitmap(mBitmapHeadRight,
-                        0, 0, ss, ss, matrix, true);
+                        0, 0, board.blockSize, board.blockSize, matrix, true);
 
         // A matrix for rotating
         matrix.preRotate(-90);
         mBitmapHeadUp = Bitmap
                 .createBitmap(mBitmapHeadRight,
-                        0, 0, ss, ss, matrix, true);
+                        0, 0, board.blockSize, board.blockSize, matrix, true);
 
         // Matrix operations are cumulative
         // so rotate by 180 to face down
         matrix.preRotate(180);
         mBitmapHeadDown = Bitmap
                 .createBitmap(mBitmapHeadRight,
-                        0, 0, ss, ss, matrix, true);
+                        0, 0, board.blockSize, board.blockSize, matrix, true);
 
         // Create and scale the body
         mBitmapBody = BitmapFactory
@@ -106,11 +102,11 @@ class Snake implements GameObject{
 
         mBitmapBody = Bitmap
                 .createScaledBitmap(mBitmapBody,
-                        ss, ss, false);
+                        board.blockSize, board.blockSize, false);
 
         // The halfway point across the screen in pixels
         // Used to detect which side of screen was pressed
-        halfWayPoint = mr.x * ss / 2;
+        halfWayPoint = board.blocksWide * board.blockSize / 2;
     }
 
     // Get the snake ready for a new game
@@ -138,6 +134,7 @@ class Snake implements GameObject{
             segmentLocations.get(i).x = segmentLocations.get(i - 1).x;
             segmentLocations.get(i).y = segmentLocations.get(i - 1).y;
         }
+
 
         // Move the head in the appropriate heading
         // Get the existing head position
@@ -170,9 +167,9 @@ class Snake implements GameObject{
 
         // Hit any of the screen edges
         if (segmentLocations.get(0).x == -1 ||
-                segmentLocations.get(0).x > mMoveRange.x ||
+                segmentLocations.get(0).x > board.blocksWide ||
                 segmentLocations.get(0).y == -1 ||
-                segmentLocations.get(0).y > mMoveRange.y) {
+                segmentLocations.get(0).y > board.blocksHigh) {
 
             dead = true;
         }
@@ -216,33 +213,33 @@ class Snake implements GameObject{
                 case RIGHT:
                     canvas.drawBitmap(mBitmapHeadRight,
                             segmentLocations.get(0).x
-                                    * mSegmentSize,
+                                    * board.blockSize,
                             segmentLocations.get(0).y
-                                    * mSegmentSize, paint);
+                                    * board.blockSize, paint);
                     break;
 
                 case LEFT:
                     canvas.drawBitmap(mBitmapHeadLeft,
                             segmentLocations.get(0).x
-                                    * mSegmentSize,
+                                    * board.blockSize,
                             segmentLocations.get(0).y
-                                    * mSegmentSize, paint);
+                                    * board.blockSize, paint);
                     break;
 
                 case UP:
                     canvas.drawBitmap(mBitmapHeadUp,
                             segmentLocations.get(0).x
-                                    * mSegmentSize,
+                                    * board.blockSize,
                             segmentLocations.get(0).y
-                                    * mSegmentSize, paint);
+                                    * board.blockSize, paint);
                     break;
 
                 case DOWN:
                     canvas.drawBitmap(mBitmapHeadDown,
                             segmentLocations.get(0).x
-                                    * mSegmentSize,
+                                    * board.blockSize,
                             segmentLocations.get(0).y
-                                    * mSegmentSize, paint);
+                                    * board.blockSize, paint);
                     break;
             }
 
@@ -250,9 +247,9 @@ class Snake implements GameObject{
             for (int i = 1; i < segmentLocations.size(); i++) {
                 canvas.drawBitmap(mBitmapBody,
                         segmentLocations.get(i).x
-                                * mSegmentSize,
+                                * board.blockSize,
                         segmentLocations.get(i).y
-                                * mSegmentSize, paint);
+                                * board.blockSize, paint);
             }
         }
     }

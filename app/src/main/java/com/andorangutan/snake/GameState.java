@@ -49,15 +49,9 @@ public class GameState implements SnakeGameBroadcaster {
         this.eatID = this.audio.load(context, "get_apple.ogg");
         this.crashID = this.audio.load(context ,"snake_death.ogg");
 
-        this.apple = new Apple(context,
-                new Point(board.blocksWide,
-                        board.blocksHigh),
-                board.blockSize);
+        this.apple = new Apple(context, board);
 
-        this.snake = new Snake(context,
-                new Point(board.blocksWide,
-                        board.blocksHigh),
-                board.blockSize);
+        this.snake = new Snake(context, board);
 
         this.hud = new HUD(new Point(graphics.getHorizontalPixels(),graphics.getVerticalPixels()));
         uiController = new UIController(this);
