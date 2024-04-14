@@ -19,6 +19,8 @@ class Apple implements GameObject{
 
     final Board board;
 
+    private Drawer drawer;
+
     // An image to represent the apple
     private Bitmap mBitmapApple;
 
@@ -29,11 +31,10 @@ class Apple implements GameObject{
         location.x = -10;
         this.board = board;
 
-        // Load the image to the bitmap
-        mBitmapApple = BitmapFactory.decodeResource(context.getResources(), R.drawable.apple);
+        this.drawer = new Drawer(context, board);
 
         // Resize the bitmap
-        mBitmapApple = Bitmap.createScaledBitmap(mBitmapApple, board.blockSize, board.blockSize, false);
+        mBitmapApple = drawer.bitmapScale(drawer.bitmapCreate(R.drawable.apple));
     }
 
     // This is called every time an apple is eaten

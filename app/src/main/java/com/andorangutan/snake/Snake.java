@@ -21,7 +21,6 @@ class Snake implements GameObject{
 
     // Where is the centre of the screen
     // horizontally in pixels?
-    private int halfWayPoint;
 
     // For tracking movement Heading
     private enum Heading {
@@ -40,77 +39,32 @@ class Snake implements GameObject{
     // A bitmap for the body
     private Bitmap mBitmapBody;
 
+    private Drawer drawer;
 
     Snake(Context context, Board board) {
 
         // Initialize our ArrayList
         segmentLocations = new ArrayList<>();
 
-        // Initialize the segment size and movement
-        // range from the passed in parameters
         this.board = board;
 
-        // Create and scale the bitmaps
-        mBitmapHeadRight = BitmapFactory
-                .decodeResource(context.getResources(),
-                        R.drawable.head);
+        this.drawer = new Drawer(context, board);
 
-        // Create 3 more versions of the head for different headings
-        mBitmapHeadLeft = BitmapFactory
-                .decodeResource(context.getResources(),
-                        R.drawable.head);
-
-        mBitmapHeadUp = BitmapFactory
-                .decodeResource(context.getResources(),
-                        R.drawable.head);
-
-        mBitmapHeadDown = BitmapFactory
-                .decodeResource(context.getResources(),
-                        R.drawable.head);
-
-        // Modify the bitmaps to face the snake head
-        // in the correct direction
-        mBitmapHeadRight = Bitmap
-                .createScaledBitmap(mBitmapHeadRight,
-                        board.blockSize, board.blockSize, false);
-
-        // A matrix for scaling
         Matrix matrix = new Matrix();
-        matrix.preScale(-1, 1);
-
-        mBitmapHeadLeft = Bitmap
-                .createBitmap(mBitmapHeadRight,
-                        0, 0, board.blockSize, board.blockSize, matrix, true);
-
-        // A matrix for rotating
-        matrix.preRotate(-90);
-        mBitmapHeadUp = Bitmap
-                .createBitmap(mBitmapHeadRight,
-                        0, 0, board.blockSize, board.blockSize, matrix, true);
-
-        // Matrix operations are cumulative
-        // so rotate by 180 to face down
-        matrix.preRotate(180);
-        mBitmapHeadDown = Bitmap
-                .createBitmap(mBitmapHeadRight,
-                        0, 0, board.blockSize, board.blockSize, matrix, true);
+        mBitmapHeadRight = drawer.bitmapCreateScaleRotate(R.drawable.head, matrix);
+        matrix.preScale(-1, 1); // Flip to left
+        mBitmapHeadLeft = drawer.bitmapCreateScaleRotate(R.drawable.head, matrix);
+        matrix.preRotate(-90); // Rotate up
+        mBitmapHeadUp = drawer.bitmapCreateScaleRotate(R.drawable.head, matrix);
+        matrix.preRotate(180); // Rotate 180 degrees down
+        mBitmapHeadDown = drawer.bitmapCreateScaleRotate(R.drawable.head, matrix);
 
         // Create and scale the body
-        mBitmapBody = BitmapFactory
-                .decodeResource(context.getResources(),
-                        R.drawable.body);
-
-        mBitmapBody = Bitmap
-                .createScaledBitmap(mBitmapBody,
-                        board.blockSize, board.blockSize, false);
-
-        // The halfway point across the screen in pixels
-        // Used to detect which side of screen was pressed
-        halfWayPoint = board.blocksWide * board.blockSize / 2;
+        mBitmapBody = drawer.bitmapScale(drawer.bitmapCreate(R.drawable.body));
     }
 
     // Get the snake ready for a new game
-    void reset(int w, int h) {
+    void reset() {
 
         // Reset the heading
         heading = Heading.RIGHT;
@@ -119,7 +73,7 @@ class Snake implements GameObject{
         segmentLocations.clear();
 
         // Start with a single snake segment
-        segmentLocations.add(new Point(w / 2, h / 2));
+        segmentLocations.add(new Point(board.blocksWide / 2, board.blocksHigh / 2));
     }
 
 
@@ -259,7 +213,7 @@ class Snake implements GameObject{
     void switchHeading(MotionEvent motionEvent) {
 
         // Is the tap on the right hand side?
-        if (motionEvent.getX() >= halfWayPoint) {
+        if (motionEvent.getX() >= ((float) (board.blocksWide * board.blockSize) / 2)) {
             switch (heading) {
                 // Rotate right
                 case UP:

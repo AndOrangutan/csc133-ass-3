@@ -62,7 +62,7 @@ public class GameState implements SnakeGameBroadcaster {
     }
     public void newGame() {
 
-        this.snake.reset(graphics.board.blocksWide, graphics.board.blocksHigh);
+        this.snake.reset();
 
         // Get the apple ready for dinner
         this.apple.spawn();
