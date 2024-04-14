@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.andorangutan.snake"
-        minSdk = 25
+        minSdk = 30
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
