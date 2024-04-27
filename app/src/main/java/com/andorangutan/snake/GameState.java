@@ -5,13 +5,28 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.view.MotionEvent;
 import android.graphics.Point;
 import android.util.Log;
 import android.graphics.Color;
 import android.graphics.Canvas;
 
+import androidx.annotation.NonNull;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class GameState implements SnakeGameBroadcaster {
 
@@ -39,6 +54,10 @@ public class GameState implements SnakeGameBroadcaster {
     private volatile boolean playing = false;
     private volatile boolean paused = true;
     private volatile boolean gameOver = true;
+
+    DatabaseReference myRef = FirebaseDatabase.getInstance().getReference().child("Scores");
+    private int[] scoreArray = new int[5];
+    private String[] dateArray = new String[5];
 
     public GameState(Context context, Graphics graphics) {
 
@@ -107,6 +126,9 @@ public class GameState implements SnakeGameBroadcaster {
             if (this.snake.detectDeath()) {
                 // Pause the game ready to start again
                 this.audio.play(this.crashID);
+
+                writeScores(this.score);
+                readScores();
 
                 this.paused = true;
                 this.gameOver = true;
@@ -203,9 +225,24 @@ public class GameState implements SnakeGameBroadcaster {
                 Typeface deathFont = context.getResources().getFont(R.font.optimusprincepssemibold);
 
                 graphics.paint.setTypeface(deathFont);
-                graphics.canvas.drawText(context.getResources().
-                                getString(R.string.you_died),
-                        500, 700, graphics.paint);
+                //graphics.canvas.drawText(context.getResources().
+                //                getString(R.string.you_died),
+                 //       500, 700, graphics.paint);
+
+                graphics.paint.setTextSize(180);
+                graphics.canvas.drawText("High Scores: ", 520, 280, graphics.paint);
+                graphics.paint.setTextSize(100);
+
+                for (int i = 0; i < 5; i++) {
+                    int y = 450 + (i * 100);
+                    if (scoreArray[i] == 0) {
+                        graphics.canvas.drawText("#" + (i + 1) + ": N/A", 500, y, graphics.paint);
+                    }
+                    else {
+                        graphics.canvas.drawText("#" + (i + 1) + ": " + scoreArray[i] + "pts - " +
+                                dateArray[i], 500, y, graphics.paint);
+                    }
+                }
             }
 
 
@@ -249,6 +286,42 @@ public class GameState implements SnakeGameBroadcaster {
                     hud.getControls());
         }
         return true;
+    }
+
+    public void writeScores(int score) {
+        String date = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now());
+        String device = Build.MANUFACTURER;
+        Scores playerScore = new Scores(device, score);
+
+
+        myRef.child(date).setValue(playerScore);
+    }
+
+    public void readScores() {
+        myRef.orderByValue().addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                List<Map.Entry<String, Integer>> highScores = new ArrayList<>();
+                for (DataSnapshot scoreSnapshot : dataSnapshot.getChildren()) {
+                    String dateString = scoreSnapshot.getKey();
+                    int score = scoreSnapshot.child("score").getValue(Integer.class);
+                    highScores.add(new AbstractMap.SimpleEntry<>(dateString, score));
+                }
+
+                Collections.sort(highScores, (entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue()));
+
+                for (int i = 0; i < Math.min(5, highScores.size()); i++) {
+                    Map.Entry<String, Integer> entry = highScores.get(i);
+                    scoreArray[i] = entry.getValue();
+                    dateArray[i] = entry.getKey();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                System.err.println("Failed to get scores - " + error.getMessage());
+            }
+        });
     }
     public boolean isGameOver() {
         return this.gameOver;

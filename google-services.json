@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "51869993011",
+    "project_id": "super-snake-8422f",
+    "storage_bucket": "super-snake-8422f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:51869993011:android:6cb198306fa0821e433b46",
+        "android_client_info": {
+          "package_name": "com.andorangutan.snake"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBl8JuOHRJTLlJyqI39aWyhMai2gilHoJs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
