@@ -5,6 +5,9 @@ import android.graphics.Point;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.ArrayList;
 
 public class Game extends SurfaceView implements Runnable {
@@ -12,6 +15,7 @@ public class Game extends SurfaceView implements Runnable {
     final GameState gs;
 
     private Context context;
+
     public Game(Context context, Graphics graphics) {
         super(context);
 
@@ -53,5 +57,6 @@ public class Game extends SurfaceView implements Runnable {
     public void onPause() {
         this.gs.pause();
     }
+
 
 }
