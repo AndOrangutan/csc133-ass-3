@@ -41,7 +41,6 @@ public class Game extends SurfaceView implements Runnable {
 
     }
 
-    
     @Override
     public boolean onTouchEvent(MotionEvent motionEvent) {
         return gs.onTouchPassthrough(motionEvent);
