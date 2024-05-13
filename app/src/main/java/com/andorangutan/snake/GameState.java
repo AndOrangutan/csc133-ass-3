@@ -154,8 +154,14 @@ public class GameState implements SnakeGameBroadcaster {
         if (graphics.getSurfaceHolder().getSurface().isValid()) {
             graphics.canvas = graphics.getSurfaceHolder().lockCanvas();
 
+            int screenWidth = graphics.canvas.getWidth();
+            int screenHeight = graphics.canvas.getHeight();
+
             Bitmap bitmapBackground = BitmapFactory.decodeResource(context.getResources(), R.drawable.background);
-            graphics.canvas.drawBitmap(bitmapBackground, 0, 0, null);
+
+            Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmapBackground, screenWidth, screenHeight, true);
+
+            graphics.canvas.drawBitmap(scaledBitmap, 0, 0, null);
 
             Typeface comicFont = context.getResources().getFont(R.font.comicsansms);
             graphics.paint.setTypeface(comicFont);

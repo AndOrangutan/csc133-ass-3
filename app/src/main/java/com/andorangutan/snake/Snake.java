@@ -51,13 +51,13 @@ class Snake implements GameObject{
         this.drawer = new Drawer(context, board);
 
         Matrix matrix = new Matrix();
-        mBitmapHeadRight = drawer.bitmapCreateScaleRotate(R.drawable.head, matrix);
-        matrix.preScale(-1, 1); // Flip to left
-        mBitmapHeadLeft = drawer.bitmapCreateScaleRotate(R.drawable.head, matrix);
-        matrix.preRotate(-90); // Rotate up
-        mBitmapHeadUp = drawer.bitmapCreateScaleRotate(R.drawable.head, matrix);
-        matrix.preRotate(180); // Rotate 180 degrees down
         mBitmapHeadDown = drawer.bitmapCreateScaleRotate(R.drawable.head, matrix);
+        matrix.preScale(-1, -1);// Flip up
+        mBitmapHeadUp = drawer.bitmapCreateScaleRotate(R.drawable.head, matrix);
+        matrix.preRotate(-90); // Rotate to the left
+        mBitmapHeadLeft = drawer.bitmapCreateScaleRotate(R.drawable.head, matrix);
+        matrix.preRotate(180); // Rotate right
+        mBitmapHeadRight = drawer.bitmapCreateScaleRotate(R.drawable.head, matrix);
 
         // Create and scale the body
         mBitmapBody = drawer.bitmapScale(drawer.bitmapCreate(R.drawable.body));
